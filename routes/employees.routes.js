@@ -26,19 +26,26 @@ router.get('/employees/:id', (req, res) => {
 
 router.post('/employees', (req, res) => {
   const { firstName, lastName } = req.body;
-  db.employees.push({ id: 3, firstName, lastName })
+  req.db.collection('employees').insertOne({firstName: firstName, lastName:lastName}, err=>{
+    if(err) res.status(500).json({message: err});
   res.json({ message: 'OK' });
+  });
 });
 
 router.put('/employees/:id', (req, res) => {
   const { firstName, lastName } = req.body;
   db = db.employees.map(item => (item.id == req.params.id) ? { ...item, firstName, lastName } : item );
-  res.json({ message: 'OK' });
+  req.db.collection('employees').updateOne({ _id: ObjectId(req.params.id) }, { $set: { name: name }}, err => {
+    if(err) res.status(500).json({ message: err });
+    res.json({ message: 'OK' });
 });
+});;
 
 router.delete('/employees/:id', (req, res) => {
-  db = db.employees.filter(item => item.id != req.params.id)
-  res.json({ message: 'OK' });
+  req.db.collection('employees').deleteOne({_id:ObjectId(req.params.id)}, err=>{
+    if(err) res.status(500).json({ message: err });
+    res.json({ message: 'OK' });
+});
 });
 
 module.exports = router;

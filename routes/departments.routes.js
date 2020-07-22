@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./../db');
 const ObjectId = require('mongodb').ObjectId;
 
 router.get('/departments', (req, res) => {
@@ -27,7 +26,6 @@ router.get('/departments/:id', (req, res) => {
 
 router.post('/departments', (req, res) => {
   const { name } = req.body;
-  db.departments.push({ id: 3, name })
   req.db.collection('departments').insertOne({name: name}, err=>{
     if(err) res.status(500).json({message: err});
     else res.json({message:'OK'});
