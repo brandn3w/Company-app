@@ -6,7 +6,7 @@ const Employee = require('../models/employees.model');
 
 router.get('/employees', async (req, res) => {
   try {
-    res.json(await Employee.find());
+    res.json(await Employee.find().populate('department'));
   } catch(err) {
     res.status(500).json(err);
   }
@@ -16,7 +16,7 @@ router.get('/employees/random', async (req, res) => {
   try {
     const count = await Employee.countDocuments();
     const rand = Math.floor(Math.random() * count);
-    const employee = await Employee.findOne().skip(rand);
+    const employee = await (await Employee.findOne().skip(rand)).populate('department');
 
     if (!employee) {
       res.status(404).json({ message: 'Not found...' });
@@ -30,7 +30,7 @@ router.get('/employees/random', async (req, res) => {
 
 router.get('/employees/:id', async (req, res) => {
   try {
-    const employee = await Employee.findById(req.params.id);
+    const employee = await (await Employee.findById(req.params.id)).populate('department');
     if (!employee) {
       res.status(404).json({ message: 'Not found...' });
     } else {
@@ -55,7 +55,7 @@ router.post('/employees', async (req, res) => {
 router.put('/employees/:id', async (req, res) => {
   const { firstName, lastName, department } = req.body;
   try {
-    const employee = await Employee.findById(req.params.id);
+    const employee = await (await Employee.findById(req.params.id)).populate('department');
     if (!employee) {
       res.status(404).json({ message: 'Not found...' });
     } else {
@@ -72,7 +72,7 @@ router.put('/employees/:id', async (req, res) => {
 
 router.delete('/employees/:id', async (req, res) => {
   try {
-    const employee = await(Employee.findById(req.params.id));
+    const employee = await((await Employee.findById(req.params.id)).populate('department'));
 
     if (!employee) {
       res.status(404).json({ message: 'Not found...' });
